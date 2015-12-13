@@ -1,4 +1,9 @@
+sudo: required
 install:
+- yes | sudo add-apt-repository ppa:fkrull/deadsnakes
+- sudo apt-get update
+- sudo apt-get install python3.5 python3.5-pip
 - dev/setup
 script:
+- bin/test
 - bin/lint
