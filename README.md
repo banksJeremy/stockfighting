@@ -1,14 +1,26 @@
-Stockfighter exercises in Python 3.5.
+Stockfighter exercises implemented in Python 3.5.
 
 ---
 
-Install/update dependencies and set up environment:
+References
+
+- <https://www.stockfighter.io/ui/account>
+- <https://starfighter.readme.io/v1.0/docs>
+
+---
+
+Initialize project venv and install/update dependencies:
 
     dev/setup
 
-Run something:
+Run... something:
 
     dev/run
+
+Test/lint:
+
+    dev/test
+    dev/lint
 
 Install/uninstall a package in the dev environment and update requirements.txt:
 
