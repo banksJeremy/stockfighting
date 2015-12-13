@@ -15,27 +15,25 @@ logger = logging.getLogger(__name__)
 
 def main():
     key = os.environ['STOCKFIGHTER_API_KEY']
-    api = stockfighter.Stockfighter(key=key)
+    client = stockfighter.Client(key=key)
     
-    assert api.request('/ob/api/heartbeat')['ok'] == True, "API is down"
+    assert client.heartbeat(), "API is down"
 
-    venues_data = api.request('ob/api/venues')
+    venues = client.venues()
 
-    venue = random.choice(
-        [v['venue'] for v in venues_data['venues'] if v['state'] ==  'open'])
+    venue = random.choice([v for v in venues if v.state ==  'open'])
 
     logger.info("Randomly chose venue %r.", venue)
 
-    assert api.request('ob/api/venues/%s/heartbeat' % (venue))['ok'] == True, "Venue is down"
+    assert venue.heartbeat(), "Venue is down"
 
-    symbols = api.request('ob/api/venues/%s/stocks' % (venue))['symbols']
+    symbols = venue.symbols()
 
-    logger.info("Stocks on %s exchange: %s", venue, ", ".join(
-        ('%(symbol)s (%(name)s)' % s) for s in symbols))
+    logger.info("Stocks on %s exchange: %s", venue, symbols)
 
-    symbol = random.choice([s['symbol'] for s in symbols])
+    symbol = random.choice(symbols)
 
-    orders_data = api.request('ob/api/venues/%s/stocks/%s' % (venue, symbol))
+    orders_data = symbol.orders_data()
 
     pp(orders_data)
 
