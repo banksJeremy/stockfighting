@@ -1,0 +1,5 @@
+#!/bin/bash -veux
+pushd "$( dirname "$0" )/../..";
+  env/bin/pip uninstall "$@";
+  env/bin/pip freeze > requirements.txt;
+popd;
