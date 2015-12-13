@@ -1,3 +1,4 @@
-colorlog==2.6.0
+coloredlogs==5.0
 humanfriendly==1.42
+pp-ez==0.2.0
 requests==2.8.1

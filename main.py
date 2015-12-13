@@ -6,6 +6,7 @@ import random
 import sys
 
 import coloredlogs
+import pp
 import requests
 
 
@@ -19,33 +20,35 @@ def main():
   key = os.environ['STOCKFIGHTER_API_KEY']
   auth_headers = {'X-Starfighter-Authorization': key}
 
-  assert requests.get(
-    API_URL + '/ob/api/heartbeat',
-    headers=auth_headers,
-  ).json()['ok'] == True, "API is down"
+  def request(path):
+    response = requests.get(
+      API_URL + '/' + path,
+      headers=auth_headers,
+    )
+    logger.debug('Got response for %r: %r', path, response)
+    return response.json()
 
-  venues_data = requests.get(
-    API_URL + '/ob/api/venues',
-    headers=auth_headers,
-  ).json()
+  assert request('/ob/api/heartbeat')['ok'] == True, "API is down"
+
+  venues_data = request('ob/api/venues')
 
   venue = random.choice(
     [v['venue'] for v in venues_data['venues'] if v['state'] ==  'open'])
 
   logger.info("Randomly chose venue %r.", venue)
 
-  assert requests.get(
-    API_URL + '/ob/api/venues/' + venue + '/heartbeat' ,
-    headers=auth_headers,
-  ).json()['ok'] == True, "Venue is down"
+  assert request('ob/api/venues/%s/heartbeat' % (venue))['ok'] == True, "Venue is down"
 
-  stocks = requests.get(
-    API_URL + '/ob/api/venues/' + venue + '/stocks' ,
-    headers=auth_headers,
-  ).json()['symbols']
+  symbols = request('ob/api/venues/%s/stocks' % (venue))['symbols']
 
   logger.info("Stocks on %s exchange: %s", venue, ", ".join(
-    ('%(symbol)s (%(name)s)' % s) for s in stocks))
+    ('%(symbol)s (%(name)s)' % s) for s in symbols))
+
+  symbol = random.choice([s['symbol'] for s in symbols])
+
+  orders_data = request('ob/api/venues/%s/stocks/%s' % (venue, symbol))
+
+  pp(orders_data)
 
 
 if __name__ == '__main__':
