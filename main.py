@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.5
-import json
 import logging
 import os
 import random
@@ -7,52 +6,42 @@ import sys
 
 import coloredlogs
 import pp
-import requests
 
-
-API_URL = 'https://api.stockfighter.io'
+import stockfighter
 
 
 logger = logging.getLogger(__name__)
 
 
 def main():
-  key = os.environ['STOCKFIGHTER_API_KEY']
-  auth_headers = {'X-Starfighter-Authorization': key}
+    key = os.environ['STOCKFIGHTER_API_KEY']
+    api = stockfighter.Stockfighter(key=key)
+    
+    assert api.request('/ob/api/heartbeat')['ok'] == True, "API is down"
 
-  def request(path):
-    response = requests.get(
-      API_URL + '/' + path,
-      headers=auth_headers,
-    )
-    logger.debug('Got response for %r: %r', path, response)
-    return response.json()
+    venues_data = api.request('ob/api/venues')
 
-  assert request('/ob/api/heartbeat')['ok'] == True, "API is down"
+    venue = random.choice(
+        [v['venue'] for v in venues_data['venues'] if v['state'] ==  'open'])
 
-  venues_data = request('ob/api/venues')
+    logger.info("Randomly chose venue %r.", venue)
 
-  venue = random.choice(
-    [v['venue'] for v in venues_data['venues'] if v['state'] ==  'open'])
+    assert api.request('ob/api/venues/%s/heartbeat' % (venue))['ok'] == True, "Venue is down"
 
-  logger.info("Randomly chose venue %r.", venue)
+    symbols = api.request('ob/api/venues/%s/stocks' % (venue))['symbols']
 
-  assert request('ob/api/venues/%s/heartbeat' % (venue))['ok'] == True, "Venue is down"
+    logger.info("Stocks on %s exchange: %s", venue, ", ".join(
+        ('%(symbol)s (%(name)s)' % s) for s in symbols))
 
-  symbols = request('ob/api/venues/%s/stocks' % (venue))['symbols']
+    symbol = random.choice([s['symbol'] for s in symbols])
 
-  logger.info("Stocks on %s exchange: %s", venue, ", ".join(
-    ('%(symbol)s (%(name)s)' % s) for s in symbols))
+    orders_data = api.request('ob/api/venues/%s/stocks/%s' % (venue, symbol))
 
-  symbol = random.choice([s['symbol'] for s in symbols])
-
-  orders_data = request('ob/api/venues/%s/stocks/%s' % (venue, symbol))
-
-  pp(orders_data)
+    pp(orders_data)
 
 
 if __name__ == '__main__':
-  coloredlogs.install(
-    level=logging.DEBUG,
-    fmt='%(asctime)s %(name)s[%(process)d] %(levelname)s %(message)s',)
-  sys.exit(main(*sys.argv[1:]))
+    coloredlogs.install(
+        level=logging.DEBUG,
+        fmt='%(asctime)s %(name)s[%(process)d] %(levelname)s %(message)s',)
+    sys.exit(main(*sys.argv[1:]))
