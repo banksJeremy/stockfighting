@@ -1,0 +1,11 @@
+{
+  "repository": "github:jeremybanks/stockfighting",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "asyncawait": "^1.0.1",
+    "request-promise": "^1.0.2"
+  },
+  "scripts": {
+    "start": "node --es_staging --harmony_destructuring ."
+  }
+}

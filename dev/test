@@ -1,5 +1,0 @@
-#!/bin/bash -veux
-pushd "$( dirname "$0" )/..";
-  export MYPYPATH=.;
-  env/bin/py.test *.py */*.py;
-popd;

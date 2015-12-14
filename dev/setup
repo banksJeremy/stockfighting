@@ -1,5 +1,0 @@
-#!/bin/bash -veux
-pushd "$( dirname "$0" )/..";
-  python3.5 -m venv env/;
-  env/bin/pip install --upgrade -r requirements.txt;
-popd;

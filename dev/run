@@ -1,4 +1,0 @@
-#!/bin/bash -veux
-pushd "$( dirname "$0" )/..";
-  env/bin/python3.5 main.py "$@";
-popd;

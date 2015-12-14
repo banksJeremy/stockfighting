@@ -1,4 +1,4 @@
-Stockfighter exercises implemented in Python 3.5.
+Stockfighter exercise implementations.
 
 ---
 
@@ -9,20 +9,10 @@ References
 
 ---
 
-Initialize project venv and install/update dependencies:
+Install/update dependencies:
 
-    dev/setup
+    npm install
 
-Run... something:
+Run something:
 
-    dev/run
-
-Test/lint:
-
-    dev/test
-    dev/lint
-
-Install/uninstall a package in the dev environment and update requirements.txt:
-
-    dev/install requests
-    dev/uninstall requests
+    npm start

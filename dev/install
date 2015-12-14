@@ -1,5 +1,0 @@
-#!/bin/bash -veux
-pushd "$( dirname "$0" )/..";
-  env/bin/pip install --upgrade "$@";
-  env/bin/pip freeze > requirements.txt;
-popd;
